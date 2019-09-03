@@ -22,9 +22,9 @@
 * `./activate`
 * `cd ../../`
 
-* pip install requirements.txt
+* `pip install requirements.txt`
 
-* python main.py
+* `python main.py`
 
 ## Usage example
 <div align="center">
