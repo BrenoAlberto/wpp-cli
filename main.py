@@ -37,7 +37,7 @@ def askMessageInformation():
         {
             'type': 'confirm',
             'name': 'save_session',
-            'message': 'Save browser session',
+            'message': "Save browser session so you just scan the qrcode once"
         },
         {
             'type': 'input',
@@ -84,15 +84,15 @@ def main():
     log("Welcome to WPP CLI", colorama.Fore.GREEN)
 
     messages_info = askMessageInformation()
-    print(messages_info)
+    log("Sending messages", colorama.Fore.GREEN)
 
-    # if messages_info['image_path'] == None:
-    messages_info['image_path'] = ''
-    # if messages_info['send_image_before_msg'] == None:
-    messages_info['send_image_before_msg'] = False
+    msg_sender = MessageSender(messages_info['save_session'])
 
-    msg_sender = MessageSender(messages_info['numbers'], messages_info['message'], messages_info['image_path'], messages_info['send_image_before_msg'],  messages_info['save_session'])
-    msg_sender.send_msgs(getattr(msg_sender, 'numbers'), getattr(msg_sender, 'message'))
+    messages_info.pop('save_session')
+
+    messages_info.pop('send_image')
+
+    msg_sender.send_msgs(**messages_info)
 
 if __name__ == '__main__':
     main()
