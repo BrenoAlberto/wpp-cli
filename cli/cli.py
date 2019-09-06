@@ -1,10 +1,9 @@
 import re
-import colorama
-from pyfiglet import figlet_format
-from PyInquirer import (Token, ValidationError, Validator, print_json, prompt, style_from_dict)
-from MessageSender import MessageSender
+from .utils import log
+from .MessageSender import MessageSender
+from PyInquirer import (Token, ValidationError, Validator, prompt, style_from_dict)
 
-colorama.init(autoreset=True)
+# ADD ANTI-BAN MODE
 
 style = style_from_dict({
     Token.QuestionMark: '#fac731 bold',
@@ -15,6 +14,7 @@ style = style_from_dict({
     Token.Pointer: '#673ab7 bold',
     Token.Question: '',
 })
+
 
 class NumbersValidator(Validator):
     num_pattern = r".*[0-9].*"
@@ -29,10 +29,11 @@ class NumbersValidator(Validator):
             raise ValidationError(message="You can't leave this blank", cursor_position=len(numbers.text))
 
 
-def listNumbers(numbers: str):
+def list_numbers(numbers: str):
     return list(map(int, re.split(r'\s?[, ]\s?', numbers)))
 
-def askMessageInformation():
+
+def ask_message_information():
     questions = [
         {
             'type': 'confirm',
@@ -49,7 +50,7 @@ def askMessageInformation():
             'name': 'numbers',
             'message': 'Send to which numbers',
             'validate': NumbersValidator,
-            'filter': lambda numbers: listNumbers(numbers)
+            'filter': lambda numbers: list_numbers(numbers)
         },
         {
             'type': 'confirm',
@@ -65,7 +66,7 @@ def askMessageInformation():
         },
         {
             'type': 'input',
-            'name': 'image_path',
+            'name': 'img_path',
             'message': 'What is the image path',
             'when': lambda answers: answers.get('send_image', True)
         }
@@ -73,26 +74,25 @@ def askMessageInformation():
     answers = prompt(questions, style=style)
     return answers
 
-def log(string, color, font="slant", figlet=False):
-    if not figlet:
-        print(f'{color}{string}')
-    else:
-        print(f'{color}{figlet_format(string, font=font)}')
 
-def main():
-    log("WhatsApp CLI", color=colorama.Fore.GREEN, figlet=True)
-    log("Welcome to WPP CLI", colorama.Fore.GREEN)
+def start_cli():
+    log("WhatsApp CLI", figlet=True)
+    log("Welcome to WPP CLI")
 
-    messages_info = askMessageInformation()
-    log("Sending messages", colorama.Fore.GREEN)
+    try:
+        messages_info = ask_message_information()
+        log("Sending messages")
 
-    msg_sender = MessageSender(messages_info['save_session'])
+        msg_sender = MessageSender(messages_info['save_session'])
 
-    messages_info.pop('save_session')
+        messages_info.pop('save_session')
 
-    messages_info.pop('send_image')
+        messages_info.pop('send_image')
 
-    msg_sender.send_msgs(**messages_info)
-
-if __name__ == '__main__':
-    main()
+        msg_sender.send_msgs(**messages_info)
+        msg_sender.exit_browser()
+        log('Messages sended')
+    except KeyboardInterrupt:
+        if isinstance(msg_sender, MessageSender):
+            msg_sender.exit_browser()
+        log('Program closed from cli')

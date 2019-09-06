@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="250" src="wpp-icon.png" alt="WhatsApp icon">
+  <img width="250" src="./img/wpp-icon.png" alt="WhatsApp icon">
   <br>
   <h1>WhatsApp CLI</h1>
 </div>
@@ -12,7 +12,7 @@
 
 ## Requirements
 
-* Python `3.5`
+* Python `3.6`
 * Google Chrome version `76`
 
 ## Running
@@ -24,11 +24,11 @@
 
 * `pip install requirements.txt`
 
-* `python main.py`
+* `python -m cli`
 
 ## Usage example
 <div align="center">
-  <img src="wpp-cli-example.png" alt="WhatsApp CLI usage example">
+  <img src="./img/wpp-cli-example.png" alt="WhatsApp CLI usage example">
   <br>
 </div>
 
