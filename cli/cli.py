@@ -1,6 +1,6 @@
 import re
-from .utils import log
-from .MessageSender import MessageSender
+from cli.utils import log, get_conf
+from cli.MessageSender import MessageSender
 from PyInquirer import (Token, ValidationError, Validator, prompt, style_from_dict)
 
 # ADD ANTI-BAN MODE
@@ -38,7 +38,8 @@ def ask_message_information():
         {
             'type': 'confirm',
             'name': 'save_session',
-            'message': "Save browser session so you just scan the qrcode once"
+            'message': "Save browser session so you just scan the qrcode once",
+            'when': lambda f: not bool(get_conf('saved_session'))
         },
         {
             'type': 'input',
@@ -81,13 +82,15 @@ def start_cli():
 
     try:
         messages_info = ask_message_information()
+        messages_info.pop('send_image')
+
         log("Sending messages")
 
+        if get_conf('saved_session'):
+            messages_info['save_session'] = True
+
         msg_sender = MessageSender(messages_info['save_session'])
-
         messages_info.pop('save_session')
-
-        messages_info.pop('send_image')
 
         msg_sender.send_msgs(**messages_info)
         msg_sender.exit_browser()
